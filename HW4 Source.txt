@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+class LoanData
+{
+private:
+	double Bal;
+	double n;
+	double i;
+	double A;
+
+public:
+	LoanData(double p, double n1, double i1);
+	void MakePayment(double a);
+	void PrintAmoritizationSchedule();
+	void PrintPayOffTimeReport(double p, double i);
+};
+
+
+//p=loan amount, n=number of years to pay off loan, i=yearly interest rate as a %
+LoanData::LoanData(double p, double n1, double i1)
+{
+	//1.   Make the interest into a fraction by dividing i by 100.
+	i= i1 / 100;
+
+	//2.   Make the interest monthly by dividing i by 12;
+	i = i / 12;
+
+	//3.   Compute the number of months to pay off the loan by multiplying n by 12.
+	n = n1 * 12;
+
+	//4.   Compute the monthly payment, A, using the formula;
+	A = p * ((i * (pow(1 + i, n))) / (pow((1 + i), n) - 1));
+
+	//5.   Save the balance p in Bal.
+	Bal = p;
+
+}
+
+void 
+//pay = payment amount
+LoanData::MakePayment(double pay)
+{
+	//1.   Compute and save the updated balance by applying the following formula:
+	Bal = (i + 1) * Bal - pay;
+
+}
+
+void
+LoanData::PrintAmoritizationSchedule()
+{
+	//   Create a report with the following fields: beginning balance, payment, 
+	//interest paid, principle paid, and ending balance. Use the following algorithm:
+	double begginningBalance, payment, interestPaid, principlePaid, endingBalance;
+
+	//Set the beggining balance to the current balance
+	begginningBalance = Bal;
+	printf("Begginning Bal. Interest Paid  Principle Paid  Ending Bal. \n");
+
+	while (begginningBalance > 0)
+
+	{
+		if (((i + 1) * begginningBalance) > A)
+		{
+			payment = A;
+			//printf("in if \n");
+		}
+		else
+		{
+			payment = (i + 1) * begginningBalance;
+			//printf("in else \n");
+		}
+		interestPaid = i * begginningBalance;
+		principlePaid = A - (i * begginningBalance);
+		endingBalance = (i + 1)* begginningBalance - A;
+		printf("%10.2f %15.2f %15.2f %14.2f \n", begginningBalance, interestPaid, principlePaid, endingBalance);
+		begginningBalance = endingBalance;
+	}
+	printf("_________________________________________________________ \n");
+
+}
+
+void
+//p = loan amount, i = monthly interest rate ie(.005)
+LoanData::PrintPayOffTimeReport(double p, double i)
+{
+	//Create a report to print the monthly payment for payoff months from 6 to 360. Use the following algorithm.
+	for (n = 6; n < 360; n++)
+	{
+		A = p*((i * (pow((1 + i), n))) / (pow((1 + i), n) - 1));
+		printf("%.2f %.2f \n", n, A);
+	}
+}
+
+int main()
+{
+	///Create loan 1
+	LoanData loan1(10000, 1, 5);
+
+	//Create loan 2
+	LoanData loan2(3000, 5, 7.5);
+
+	//Create loan 3
+	LoanData loan3(7500, 2, 2.5);
+	
+	//Call PrintAmoritizationSchedule for loan 1
+	loan1.PrintAmoritizationSchedule();
+	
+	//Call MakePayment for loan 2
+	loan2.MakePayment(2000);
+	//Call PrintAmoritizationSchedule for loan 2 after payment was made
+	loan2.PrintAmoritizationSchedule();
+
+	//Call PrintPayOffTimeReport for loan 3
+	loan3.PrintPayOffTimeReport(7500, .005);
+
+	system("pause");
+
+	return 0;
+}
